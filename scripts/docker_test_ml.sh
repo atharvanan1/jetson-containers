@@ -5,13 +5,14 @@ source scripts/l4t_version.sh
 
 ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 TEST_MOUNT="$ROOT/../test:/test"
+MODEL_MOUNT="$ROOT/../.cache:/root/.cache"
 CONTAINERS=${1:-"all"}
 
 # cuda tests
 test_cuda()
 {
 	echo "testing container $1 => PyCUDA"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_cuda.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_cuda.py
 	echo -e "done testing container $1 => PyCUDA\n"
 }
 
@@ -19,7 +20,7 @@ test_cuda()
 test_cupy()
 {
 	echo "testing container $1 => CuPy"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_cupy.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_cupy.py
 	echo -e "done testing container $1 => CuPy\n"
 }
 
@@ -27,7 +28,7 @@ test_cupy()
 test_numpy()
 {
 	echo "testing container $1 => numpy"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_numpy.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_numpy.py
 	echo -e "done testing container $1 => numpy\n"
 }
 
@@ -35,7 +36,7 @@ test_numpy()
 test_numba()
 {
 	echo "testing container $1 => numba"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_numba.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_numba.py
 	echo -e "done testing container $1 => numba\n"
 }
 
@@ -43,7 +44,7 @@ test_numba()
 test_onnx()
 {
 	echo "testing container $1 => onnx"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_onnx.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_onnx.py
 	echo -e "done testing container $1 => onnx\n"
 }
 
@@ -51,7 +52,7 @@ test_onnx()
 test_opencv()
 {
 	echo "testing container $1 => OpenCV"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_opencv.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_opencv.py
 	echo -e "done testing container $1 => OpenCV\n"
 }
 
@@ -59,7 +60,7 @@ test_opencv()
 test_pandas()
 {
 	echo "testing container $1 => pandas"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_pandas.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_pandas.py
 	echo -e "done testing container $1 => pandas\n"
 }
 
@@ -68,7 +69,7 @@ test_pytorch()
 {
 	echo "testing container $1 => PyTorch"
 
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_pytorch.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_pytorch.py
 	
 	# download data for testing torchvision models
 	DATA_URL="https://nvidia.box.com/shared/static/y1ygiahv8h75yiyh0pt50jqdqt7pohgx.gz"
@@ -84,8 +85,8 @@ test_pytorch()
 		tar -xzf test/data/$DATA_NAME.tar.gz -C test/data/
 	fi
 
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_torchvision.py --data=$DATA_PATH --use-cuda
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_torchaudio.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_torchvision.py --data=$DATA_PATH --use-cuda
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_torchaudio.py
 
 	echo -e "done testing container $1 => PyTorch\n"
 }
@@ -95,8 +96,8 @@ test_pytorch()
 test_protobuf()
 {
 	echo "testing container $1 => protobuf"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r bash test/test_protobuf.sh
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_protobuf.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r bash test/test_protobuf.sh
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_protobuf.py
 	echo -e "done testing container $1 => protobuf\n"
 }
 
@@ -105,7 +106,7 @@ test_protobuf()
 test_tensorflow()
 {
 	echo "testing container $1 => TensorFlow"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_tensorflow.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_tensorflow.py
 	echo -e "done testing container $1 => TensorFlow\n"
 }
 
@@ -113,7 +114,7 @@ test_tensorflow()
 test_tensorrt()
 {
 	echo "testing container $1 => TensorRT"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_tensorrt.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_tensorrt.py
 	echo -e "done testing container $1 => TensorRT\n"
 }
 
@@ -121,7 +122,7 @@ test_tensorrt()
 test_scipy()
 {
 	echo "testing container $1 => scipy"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_scipy.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_scipy.py
 	echo -e "done testing container $1 => scipy\n"
 }
 
@@ -129,7 +130,7 @@ test_scipy()
 test_sklearn()
 {
 	echo "testing container $1 => sklearn"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_sklearn.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_sklearn.py
 	echo -e "done testing container $1 => sklearn\n"
 }
 
@@ -137,8 +138,8 @@ test_sklearn()
 test_vpi()
 {
 	echo "testing container $1 => VPI"
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r python3 test/test_vpi.py
-	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -r test/test_vpi.sh
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r python3 test/test_vpi.py
+	sh ./scripts/docker_run.sh -c $1 -v $TEST_MOUNT -v $MODEL_MOUNT -r test/test_vpi.sh
 	echo -e "done testing container $1 => VPI\n"
 }
 
